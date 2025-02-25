@@ -31,6 +31,7 @@ export default class CategoricalFilterDialog extends ADialog {
     node.insertAdjacentHTML(
       'beforeend',
       `<div class="${cssClass('dialog-table')}">
+        <input type="text" placeholder="Filter categories..." class="${cssClass('category-filter-input')}" data-filter="">
         <label class="${cssClass('checkbox')} ${cssClass('dialog-filter-table-entry')}">
           <input type="checkbox" checked>
           <span>
@@ -47,6 +48,7 @@ export default class CategoricalFilterDialog extends ADialog {
               c.color
             )}"></span>
             <div class="${cssClass('dialog-filter-table-entry-label')}"> </div>
+            <a href="#" class="${cssClass('dialog-filter-table-only')}" data-cat="${c.name}">[Only]</a>&nbsp;
             <div class="${cssClass('dialog-filter-table-entry-stats')}"></div>
           </span>
         </label>`
@@ -57,19 +59,73 @@ export default class CategoricalFilterDialog extends ADialog {
           <span>
             <span class="${cssClass('dialog-filter-table-color')} ${cssClass('missing')}"></span>
             <div class="${cssClass('dialog-filter-table-entry-label')}">missing value rows</div>
+            <a href="#" class="${cssClass('dialog-filter-table-only')}" data-cat="">[Only]</a>&nbsp;
             <div class="${cssClass('dialog-filter-table-entry-stats')}">0</div>
           </span>
         </label>
     </div>`
     );
+    
+    const filterInput = node.querySelector(`.${cssClass('category-filter-input')}`) as HTMLInputElement;
+    const categoryLabels = node.querySelectorAll(`label.${cssClass('checkbox')}[data-cat]`);
+    // Focus the filter input when the dialog is shown
+    setTimeout(() => filterInput.focus(), 10);
+    filterInput.addEventListener('input', () => {
+      const filterValue = filterInput.value.toLowerCase();
+      categoryLabels.forEach((label) => {
+        const categoryLabel = label.querySelector(`.${cssClass('dialog-filter-table-entry-label')}`)?.textContent?.toLowerCase();
+        if (categoryLabel && categoryLabel.includes(filterValue)) {
+          (label as HTMLElement).style.display = '';
+        } else {
+          (label as HTMLElement).style.display = 'none';
+        }
+      });
+    });
+    node.querySelectorAll(`.${cssClass('dialog-filter-table-only')}`).forEach((onlyLink) => {
+      onlyLink.addEventListener('click', (event) => {
+        event.preventDefault();
+
+        // Uncheck Select All checkbox
+        const selectAll = this.findInput('input:not([data-cat]):not([data-filter])');
+        selectAll.checked = false;
+
+        const catName = (event.target as HTMLElement).dataset.cat;
+        
+        // Uncheck all categories
+        forEach(node, 'input[data-cat]', (checkbox: HTMLInputElement) => {
+          checkbox.checked = false;
+        });
+    
+        // Uncheck missing value rows if the category is not missing
+        const missingCheckbox = this.findInput('input[data-missing]');
+        if (catName) {
+          missingCheckbox.checked = false;
+        }
+        else {
+          missingCheckbox.checked = true;
+        }
+
+        // Check only the clicked category
+        const targetCheckbox = node.querySelector(`input[data-cat][data-cat="${catName}"]`) as HTMLInputElement;
+        if (targetCheckbox) {
+          targetCheckbox.checked = true;
+        }
+        this.submit(); // Ensures the filter is applied immediately
+      });
+    });
     const categories = this.column.categories;
+    categoryLabels.forEach((n, i) => {
+      const cat = categories[i];
+      (n.firstElementChild as HTMLElement).dataset.cat = cat.name;
+      n.querySelector(`.${cssClass('dialog-filter-table-entry-label')}`).textContent = cat.label;
+    });
     Array.from(node.querySelectorAll(`label.${cssClass('checkbox')}[data-cat]`)).forEach((n, i) => {
       const cat = categories[i];
       (n.firstElementChild as HTMLElement).dataset.cat = cat.name;
       n.querySelector(`.${cssClass('dialog-filter-table-entry-label')}`).textContent = cat.label;
     });
     // selectAll
-    const selectAll = this.findInput('input:not([data-cat])');
+    const selectAll = this.findInput('input:not([data-cat]):not([data-filter])');
     selectAll.onchange = () => {
       forEach(node, 'input[data-cat],input[data-missing]', (n: HTMLInputElement) => (n.checked = selectAll.checked));
     };
