@@ -35,17 +35,17 @@
   "main": "build/LineUpJS.js",
   "unpkg": "build/LineUpJS.js",
   "jsdelivr": "build/LineUpJS.js",
-  "module": "build/src/index.js",
-  "types": "build/src/index.d.ts",
+  "module": "build/esm/index.js",
+  "types": "build/esm/index.d.ts",
   "exports": {
     ".": {
       "import": "./build/esm/index.js",
-      "require": "./build/index.js",
+      "require": "./build/LineUpJS.js",
       "style": "./build/LineUpJS.css",
       "sass": "./src/style.scss",
-      "types": "./build/src/index.d.ts"
+      "types": "./build/esm/index.d.ts"
     },
-    "./*": "./build/src/*.js",
+    "./*": "./build/esm/*.js",
     "./.pnp.cjs": "./.pnp.cjs",
     "./build/*": "./build/*",
     "./src/*": "./src/*"
@@ -68,7 +68,7 @@
   ],
   "scripts": {
     "clean": "rimraf --glob build dist docs \"*.tgz\" && npm run clean:compile",
-    "clean:compile": "rimraf --glob build/src \"build/*.tsbuildinfo\" \"*.tsbuildinfo\" ",
+    "clean:compile": "rimraf --glob build/esm \"build/*.tsbuildinfo\" \"*.tsbuildinfo\" ",
     "compile": "tsc -b ./tsconfig.json",
     "compile:dev": "tsc -b ./tsconfig.dev.json",
     "fix": "npm run eslint:fix && npm run prettier:write && npm run stylelint:fix",

@@ -1,0 +1,158 @@
+@use 'sass:color';
+@use '../vars';
+@use 'lineupengine/src/styles/vars' as le;
+
+.#{le.$engine_css_prefix}-th {
+  color: black;
+  margin-bottom: 15px;
+  border-bottom: 1px solid black;
+
+  &.#{le.$engine_css_prefix}-frozen {
+    position: sticky;
+  }
+
+  &.#{le.$engine_css_prefix}-shifted.#{le.$engine_css_prefix}-frozen::before {
+    /**
+    add a dummy white blocker for the margin-bottom
+     */
+    content: '';
+    position: absolute;
+    left: 0;
+    right: -(vars.$lu-engine_grip_gap);
+    height: 15px;
+    bottom: -16px;
+    background: white;
+    pointer-events: none;
+  }
+
+  &:hover {
+    background-color: vars.$lu_hover_header_color;
+
+    > .#{vars.$lu_css_prefix}-th-toolbar {
+      color: vars.$lu_toolbar_color_base2;
+    }
+  }
+}
+
+.#{vars.$lu_css_prefix}-th-toolbar {
+  color: vars.$lu_toolbar_color_base;
+}
+
+.#{vars.$lu_css_prefix}-th-label {
+  text-align: center;
+  padding-left: 0.8em;
+  margin-right: vars.$lu-engine_grip_gap;
+  font-weight: 500;
+}
+
+.#{vars.$lu_css_prefix}-th-sublabel {
+  text-align: center;
+  margin-right: vars.$lu-engine_grip_gap;
+  display: none;
+}
+
+.#{vars.$lu_css_prefix}-show-sublabel > .#{vars.$lu_css_prefix}-header > .#{vars.$lu_css_prefix}-sublabel {
+  display: unset;
+}
+
+.#{vars.$lu_css_prefix}-th-summary {
+  height: 2em;
+
+  &:empty {
+    display: none;
+  }
+
+  &[data-renderer='selection'] {
+    display: block; // have just a before element
+  }
+}
+
+.#{vars.$lu_css_prefix}-header-drop {
+  @include vars.user_select_none();
+
+  position: absolute;
+  top: 0;
+  height: 100%;
+  z-index: 10;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: color.adjust(vars.$lu_drag_over, $lightness: 35%);
+  border: 2px dashed vars.$lu_drag_over;
+  font-size: small;
+  text-align: center;
+  opacity: 0;
+
+  &::before {
+    content: attr(data-draginfo);
+    overflow: hidden;
+  }
+
+  &.#{vars.$lu_css_prefix}-dragover {
+    transition: opacity 0.2s ease;
+    opacity: 1;
+  }
+}
+
+.#{vars.$lu_css_prefix}-merger {
+  left: 20%;
+  width: 60%;
+}
+
+.#{vars.$lu_css_prefix}-placer {
+  left: 80%;
+  width: 40%;
+}
+
+.#{vars.$lu_css_prefix}-dragging-column .#{vars.$lu_css_prefix}-header-drop {
+  display: flex;
+}
+
+.#{vars.$lu_css_prefix}-handle {
+  position: absolute;
+  right: -(vars.$lu-engine_grip_gap);
+  width: vars.$lu_engine_grip_gap;
+  height: 100%;
+  background-color: white;
+  cursor: col-resize;
+  border-bottom: 1px solid white;
+  text-align: center;
+  bottom: -1px;
+
+  &:hover {
+    background-color: vars.$lu_hover_button_color;
+  }
+}
+
+.#{vars.$lu_css_prefix}-resizing {
+  cursor: col-resize !important;
+}
+
+.#{vars.$lu_css_prefix}-dragging {
+  cursor: ew-resize !important;
+}
+
+// FIXME
+.#{vars.$lu_css_prefix}-dialog-sub-nested > section {
+  margin-bottom: vars.$lu_engine_grip_gap + 15px;
+}
+
+.#{vars.$lu_css_prefix}-sub-handle {
+  height: vars.$lu_engine_grip_gap;
+  width: 100%;
+  bottom: (vars.$lu_engine_grip_gap * -1) - 1px - 15px;
+  left: 0;
+  right: 0;
+  cursor: inherit;
+}
+
+// FIXME
+.#{le.$engine_css_prefix}-th.#{vars.$lu_css_prefix}-rotated-label {
+  margin-top: 10em;
+
+  > .#{vars.$lu_css_prefix}-label.#{vars.$lu_css_prefix}-rotated {
+    overflow: visible;
+    text-align: left;
+    transform-origin: top left;
+  }
+}

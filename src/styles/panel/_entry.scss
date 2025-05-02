@@ -1,0 +1,47 @@
+@use '../vars';
+
+.#{vars.$lu_css_prefix}-side-panel-entry {
+  background-color: #fff;
+}
+
+.#{vars.$lu_css_prefix}-side-panel-entry-header {
+  display: flex;
+  align-content: space-between;
+  align-items: center;
+  background: vars.$lu_side_panel_bg_color;
+  padding: 0.4em 0.5em;
+  position: relative;
+  font-size: vars.$lu_side_panel_font_size;
+  font-weight: 500;
+}
+
+.#{vars.$lu_css_prefix}-side-panel-labels {
+  margin: 0 1em 0 0;
+  padding: 0 0 0 0.4em;
+  overflow: hidden !important;
+  cursor: pointer;
+  flex: 1;
+  white-space: nowrap;
+}
+
+.#{vars.$lu_css_prefix}-side-panel-toolbar {
+  color: vars.$lu_toolbar_color_base2;
+  padding: 0;
+}
+
+.#{vars.$lu_css_prefix}-side-panel-summary {
+  margin: 0.5em;
+  font-size: small;
+  height: 50px;
+
+  &:empty {
+    display: none;
+  }
+
+  &.#{vars.$lu_css_prefix}-renderer-string,
+  &.#{vars.$lu_css_prefix}-renderer-stringhist {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+}

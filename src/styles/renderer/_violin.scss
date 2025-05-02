@@ -1,0 +1,29 @@
+@use 'sass:math';
+
+@use '../vars';
+
+.#{vars.$lu_css_prefix}-renderer-violin {
+  display: flex;
+  flex-direction: row;
+}
+
+.#{vars.$lu_css_prefix}-violin {
+  flex: 1 1 0;
+}
+
+.#{vars.$lu_css_prefix}-violin-path {
+  fill: currentcolor;
+  stroke: currentcolor;
+  vector-effect: non-scaling-stroke;
+}
+
+.#{vars.$lu_css_prefix}-violin-mean {
+  stroke-dasharray: 2 1;
+}
+
+.#{vars.$lu_css_prefix}-violin-median,
+.#{vars.$lu_css_prefix}-violin-mean,
+.#{vars.$lu_css_prefix}-violin-iqr {
+  stroke: currentcolor;
+  vector-effect: non-scaling-stroke;
+}

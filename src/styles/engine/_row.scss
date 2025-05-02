@@ -1,0 +1,60 @@
+@use '../vars';
+@use 'lineupengine/src/styles/vars' as le;
+@use 'lineupengine/src/styles/mixins' as *;
+
+.#{vars.$lu_css_prefix}-hover-only {
+  visibility: hidden;
+  padding-left: 4px;
+
+  > .#{vars.$lu_css_prefix}-gradient-text {
+    left: 4px;
+  }
+}
+
+.#{le.$engine-css_prefix}-tr {
+  /*
+  &:hover,
+  &.#{vars.$lu_css_prefix}-selected,
+  &.#{le.$engine_css_prefix}-highlighted {
+    .#{vars.$lu_css_prefix}-hover-only {
+      visibility: visible;
+    }
+  }
+  */
+
+  &.#{vars.$lu_css_prefix}-selected {
+    /**
+    selected state extends hover state
+    */
+    @include collapsing-row-border(vars.$lu_engine_row_outline_width, vars.$lu_selected_color);
+
+    background-color: vars.$lu_selected_color;
+  }
+
+  > canvas {
+    height: 100%;
+    display: block;
+  }
+}
+
+.#{le.$engine-css_prefix}-td[data-group='d'] {
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
+// FIXME
+.#{vars.$lu-css_prefix}-whole-hover {
+  .#{vars.$lu-css_prefix}-row:hover {
+    height: auto !important;
+    white-space: unset;
+  }
+}
+
+.#{le.$engine-css_prefix}-td.#{le.$engine_css_prefix}-shifted.#{le.$engine_css_prefix}-frozen {
+  /**
+  add a dummy white blocker for the margin-right
+    */
+  border-right: vars.$lu-engine_grip_gap solid white;
+  box-sizing: content-box;
+}

@@ -1,0 +1,30 @@
+@use '../vars';
+
+.#{vars.$lu_css_prefix}-summary {
+  span.#{vars.$lu_css_prefix}-disabled {
+    @include vars.user_select_none();
+
+    color: gray;
+    cursor: not-allowed;
+  }
+
+  input[type='text'],
+  select {
+    border: 1px solid vars.$lu_side_panel_input_border;
+    border-radius: vars.$lu_side_panel_input_border_radius;
+    padding: 3px 5px;
+    box-sizing: border-box;
+  }
+
+  select {
+    outline: none;
+    cursor: pointer;
+  }
+
+  .#{vars.$lu_css_prefix}-checkbox > span {
+    font-weight: normal;
+    align-items: center;
+    margin: 5px 0;
+    font-size: 13px;
+  }
+}

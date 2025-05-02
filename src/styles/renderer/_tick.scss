@@ -1,0 +1,21 @@
+@use 'sass:math';
+
+@use '../vars';
+@use 'lineupengine/src/styles/vars' as le;
+
+.#{vars.$lu_css_prefix}-renderer-tick {
+  > div {
+    background: vars.$lu_renderer_tick_color;
+    width: vars.$lu_renderer_tick_size;
+    opacity: vars.$lu_renderer_tick_opacity;
+    height: 100%;
+    top: 0%;
+    transform: translate(-50%, 0);
+    position: absolute;
+    z-index: -1;
+  }
+}
+
+.#{le.$engine_css_prefix}-td.#{vars.$lu_css_prefix}-renderer-tick[data-group='d'] {
+  overflow-x: unset;
+}

@@ -1,0 +1,12 @@
+@use '../vars';
+
+.#{vars.$lu_css_prefix}-stack-sub {
+  position: relative;
+  height: 100%;
+}
+
+.#{vars.$lu_css_prefix}-nested-sub {
+  position: relative;
+  height: 100%;
+  width: calc(100% - #{vars.$lu_engine_grip_gap}); // subtract gap to maintain grid
+}

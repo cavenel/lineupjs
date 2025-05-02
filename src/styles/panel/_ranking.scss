@@ -1,0 +1,106 @@
+@use '../vars';
+@use '../icons/index';
+
+.#{vars.$lu_css_prefix}-side-panel-rankings {
+  border-bottom: 2px solid vars.$lu_side_panel_bg_color;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  padding-right: 1em;
+
+  > i {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 0.3em 0.3em 0.25em 0.2em;
+    z-index: 2;
+    background: white;
+    color: vars.$lu_toolbar_color_base2;
+    cursor: pointer;
+    font-size: vars.$lu_toolbar_font_size;
+
+    &:hover {
+      color: vars.$lu_toolbar_color_hover;
+    }
+  }
+
+  &[data-count='1'],
+  &[data-count='0'] {
+    display: none;
+  }
+
+  &[data-count='2'] > i {
+    display: none;
+  }
+}
+
+.#{vars.$lu_css_prefix}-side-panel-ranking-header {
+  margin-right: 0.1em;
+  border: 1px solid vars.$lu_side_panel_bg_color;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.#{vars.$lu_css_prefix}-side-panel-main {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.#{vars.$lu_css_prefix}-side-panel-ranking {
+  display: none;
+  flex: 1 1 0;
+  flex-direction: column;
+
+  &.#{vars.$lu_css_prefix}-active {
+    display: flex;
+  }
+
+  &::before {
+    content: 'Column Summaries';
+    font-size: small;
+    display: block;
+    color: vars.$lu_toolbar_color_base2;
+    padding: 0.5em;
+    order: 3;
+  }
+}
+
+.#{vars.$lu_css_prefix}-side-panel-ranking-main {
+  order: 4;
+  flex: 1 1 0;
+  position: relative;
+  overflow: auto;
+}
+
+.#{vars.$lu_css_prefix}-side-panel-chooser {
+  text-align: center;
+  padding: 1em 0.5em;
+  order: 1;
+}
+
+.#{vars.$lu_css_prefix}-side-panel-ranking-label {
+  padding: 0.2em 0.5em;
+  cursor: pointer;
+  display: flex;
+
+  > span {
+    white-space: nowrap;
+  }
+
+  &:hover,
+  &.#{vars.$lu_css_prefix}-active {
+    background: vars.$lu_side_panel_bg_color;
+  }
+
+  > i {
+    color: vars.$lu_toolbar_color_base2;
+    padding-left: 4px;
+    cursor: pointer;
+    font-size: vars.$lu_toolbar_font_size;
+
+    &:hover {
+      color: vars.$lu_toolbar_color_hover;
+    }
+  }
+}

@@ -1,0 +1,15 @@
+@use '../vars';
+
+.#{vars.$lu_css_prefix}-renderer-interleaving {
+  display: flex;
+  flex-direction: column;
+
+  &.#{vars.$lu_css_prefix}-histogram {
+    flex-direction: row;
+  }
+
+  > div {
+    flex: 1 1 0;
+    overflow-y: hidden;
+  }
+}

@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
-    "target": "ES2019",
+    "module": "ES2015",
+    "target": "ES5",
     "importHelpers": false,
-    "sourceMap": false,
+    "sourceMap": true,
     "lib": ["DOM", "ES2015", "es2016.array.include", "es2017.object"],
     "composite": true,
     "declaration": true,
@@ -19,13 +19,10 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
     "jsx": "react",
-    "skipLibCheck": true,
     "esModuleInterop": true,
     "rootDir": "./src",
-    "declarationDir": "build/esm/types",
-    "outDir": "build/esm",
+    "outDir": "build/src",
     "baseUrl": "./",
     "paths": {
       "@": ["./src"],

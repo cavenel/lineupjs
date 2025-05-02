@@ -1,0 +1,310 @@
+/**
+  popups, e.g., rename dialogs,...
+ */
+
+@use 'sass:color';
+@use 'vars';
+@use 'icons/index' as icons;
+
+@keyframes #{vars.$lu_css_prefix}-dialogs-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.#{vars.$lu_css_prefix}-backdrop {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+}
+
+.#{vars.$lu_css_prefix}-backdrop-bg {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 10%);
+  animation: #{vars.$lu_css_prefix}-dialogs-fade-in 0.2s;
+}
+
+.#{vars.$lu_css_prefix}-dialog,
+.#{vars.$lu_css_prefix}-tooltip {
+  background-color: white;
+  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  padding: 5px;
+  z-index: 9;
+  font-size: vars.$lu_dialog_font_size;
+  clear: right;
+  animation: #{vars.$lu_css_prefix}-dialogs-fade-in 0.4s;
+
+  strong {
+    margin: 1em 0.2em 0.4em;
+    display: inline-block;
+  }
+}
+
+.#{vars.$lu_css_prefix}-dialog {
+  label {
+    font-weight: normal;
+  }
+
+  input {
+    font-size: 8pt;
+  }
+
+  .#{vars.$lu_css_prefix}-checkbox:not(.#{vars.$lu_css_prefix}-dialog-filter-table-entry) > span {
+    font-weight: normal;
+    align-items: center;
+    margin: 5px 0;
+    font-size: 13px;
+  }
+}
+
+.#{vars.$lu_css_prefix}-dialog-button {
+  border: none;
+  background: none;
+  color: vars.$lu_toolbar_color_base;
+  transition: all 0.5s ease;
+  margin-top: 1em;
+  cursor: pointer;
+
+  &:hover,
+  &:active,
+  &:focus {
+    color: vars.$lu_toolbar_color_hover;
+  }
+
+  &::before {
+    @include icons.lu_icons();
+  }
+
+  &[type='submit']::before {
+    content: icons.$lu_icon_check;
+  }
+
+  &[title='Cancel']::before {
+    content: icons.$lu_icon_times;
+  }
+
+  &[type='reset']::before {
+    content: icons.$lu_icon_undo;
+  }
+
+  &.#{vars.$lu_css_prefix}-dialog-weights-distribute-button::before {
+    content: icons.$lu_icon_sliders;
+  }
+
+  &[type='submit'] {
+    float: right;
+    color: color.adjust(vars.$lu_toolbar_color_base, $lightness: -20%); // slightly darker primary action
+  }
+
+  &[title='Remove'] {
+    color: color.adjust(vars.$lu_toolbar_color_base, $lightness: -20%); // slightly darker primary action
+  }
+}
+
+.#{vars.$lu_css_prefix}-dialog-sub-nested {
+  width: 150px;
+}
+
+.#{vars.$lu_css_prefix}-dialog-table {
+  overflow-y: auto;
+  max-height: 50vh;
+
+  input[type='number'] {
+    width: 6em;
+  }
+}
+
+.#{vars.$lu_css_prefix}-dialog-filter-table-entry {
+  display: flex;
+
+  > input[type='checkbox']:not(:checked) + span {
+    opacity: 0.5;
+  }
+
+  > span {
+    transition: opacity 0.25s ease;
+    flex-grow: 1;
+  }
+}
+
+.#{vars.$lu_css_prefix}-dialog-color-table-entry {
+  min-width: 10em;
+  display: block;
+
+  > input {
+    width: 3em;
+  }
+
+  > select {
+    width: 100%;
+    margin: 1em 0;
+  }
+}
+
+.#{vars.$lu_css_prefix}-dialog-table-entry-wide {
+  min-width: 19em;
+}
+
+.#{vars.$lu_css_prefix}-dialog-filter-table-color {
+  width: 1.2em;
+  margin: 0 0.5em;
+}
+
+.#{vars.$lu_css_prefix}-dialog-filter-table-entry-label {
+  flex-grow: 1;
+}
+
+.#{vars.$lu_css_prefix}-dialog-filter-table-entry-stats {
+  color: vars.$lu_toolbar_color_base;
+}
+
+.#{vars.$lu_css_prefix}-dialog-filter-color-bar {
+  width: 100px;
+  position: relative;
+
+  > span {
+    top: 1px;
+    left: 0;
+    bottom: 1px;
+    position: absolute;
+    margin: 0;
+    transition: background-color 0.25s linear;
+  }
+}
+
+.#{vars.$lu_css_prefix}-dialog-weights-table-entry {
+  display: flex;
+}
+
+.#{vars.$lu_css_prefix}-dialog-color {
+  width: 17em;
+  display: flex;
+  flex-direction: column;
+
+  > strong[data-toggle] {
+    cursor: pointer;
+
+    &::before {
+      @include icons.lu_icons();
+
+      content: icons.$lu_icon_caret_right;
+      width: 0.8em;
+    }
+
+    &[data-toggle='open']::before {
+      content: icons.$lu_icon_caret_down;
+    }
+  }
+
+  input[disabled] {
+    cursor: not-allowed;
+    opacity: 0.2;
+  }
+
+  [data-toggle=''] + div {
+    display: none;
+  }
+}
+
+.#{vars.$lu_css_prefix}-color-custom {
+  display: inline-flex;
+  justify-content: space-between;
+
+  > input {
+    width: unset;
+    flex: 1 1 0;
+  }
+}
+
+.#{vars.$lu_css_prefix}-tooltip {
+  pointer-events: none;
+  min-width: 15em;
+  max-width: 50em;
+
+  div[data-popper-arrow] {
+    position: absolute;
+    width: 0;
+    height: 0;
+  }
+
+  $arrow_size: 5px;
+
+  &[data-popper-placement^='bottom'] div[data-popper-arrow] {
+    border-left: $arrow_size solid transparent;
+    border-right: $arrow_size solid transparent;
+    border-bottom: $arrow_size solid black;
+    top: -$arrow_size;
+  }
+
+  &[data-popper-placement^='left'] div[data-popper-arrow] {
+    border-top: $arrow_size solid transparent;
+    border-bottom: $arrow_size solid transparent;
+    border-left: $arrow_size solid black;
+    right: -$arrow_size;
+  }
+
+  &[data-popper-placement^='right'] div[data-popper-arrow] {
+    border-top: $arrow_size solid transparent;
+    border-bottom: $arrow_size solid transparent;
+    border-right: $arrow_size solid black;
+    left: -$arrow_size;
+  }
+
+  &[data-popper-placement^='top'] div[data-popper-arrow] {
+    border-left: $arrow_size solid transparent;
+    border-right: $arrow_size solid transparent;
+    border-top: $arrow_size solid black;
+    bottom: -$arrow_size;
+  }
+}
+
+/* search dialog for string columns */
+.#{vars.$lu_css_prefix}-string-search-dialog {
+  display: flex;
+  gap: 5px;
+
+  .#{vars.$lu_css_prefix}-search-count {
+    color: vars.$lu_toolbar_color_base;
+  }
+
+  button {
+    border: none;
+    background: none;
+    color: vars.$lu_toolbar_color_base2;
+
+    &:disabled {
+      color: vars.$lu_toolbar_color_base;
+    }
+
+    &:not(:disabled) {
+      cursor: pointer;
+
+      &:hover,
+      &:active,
+      &:focus {
+        color: vars.$lu_toolbar_color_hover;
+      }
+    }
+
+    &::before {
+      @include icons.lu_icons();
+    }
+
+    &.#{vars.$lu_css_prefix}-previous-result::before {
+      content: icons.$lu_icon_up_open;
+    }
+
+    &.#{vars.$lu_css_prefix}-next-result::before {
+      content: icons.$lu_icon_down_open;
+    }
+  }
+}

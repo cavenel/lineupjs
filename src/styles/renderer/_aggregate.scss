@@ -1,0 +1,126 @@
+@use '../vars';
+@use '../icons/index' as icons;
+
+@use 'lineupengine/src/styles/vars' as le;
+
+.#{vars.$lu_css_prefix}-renderer-aggregate {
+  display: flex;
+
+  &.#{le.$engine_css_prefix}-td {
+    overflow: visible;
+  }
+}
+
+.#{vars.$lu_css_prefix}-renderer-group {
+  &.#{le.$engine_css_prefix}-td {
+    overflow: visible;
+
+    > div {
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.#{vars.$lu_css_prefix}-agg-level {
+  flex: 0 0 vars.$lu_aggregate_level_width;
+  position: relative; // square bracket around
+
+  &::after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    left: vars.$lu_aggregate_level_offset;
+    bottom: 0;
+    width: vars.$lu_aggregate_square_bracket_width;
+    border-left: vars.$lu_aggregate_square_bracket_stroke_width solid vars.$lu_aggregate_square_bracket_stroke_color;
+  }
+
+  &[data-level][data-meta~='first']::after {
+    top: 0;
+    border-top: vars.$lu_aggregate_square_bracket_stroke_width solid vars.$lu_aggregate_square_bracket_stroke_color;
+  }
+
+  &[data-meta~='last']::after {
+    border-bottom: vars.$lu_aggregate_square_bracket_stroke_width solid vars.$lu_aggregate_square_bracket_stroke_color;
+  }
+}
+
+.#{vars.$lu_css_prefix}-agg-expand {
+  flex: 0 0 vars.$lu_aggregate_level_width;
+  position: relative;
+  color: vars.$lu_toolbar_color_base;
+
+  &::before {
+    @include icons.lu_icons();
+
+    cursor: pointer;
+    padding-left: 0.5em;
+    content: icons.$lu_icon_caret_down;
+  }
+
+  &:hover {
+    color: vars.$lu_toolbar_color_hover;
+  }
+
+  &.#{vars.$lu_css_prefix}-agg-collapse::before {
+    content: icons.$lu_icon_caret_right;
+  }
+}
+
+.#{vars.$lu_css_prefix}-agg-inner {
+  &::before {
+    content: '\2012';
+    position: absolute;
+    left: 0.7em;
+    top: -2px;
+    bottom: 0;
+    padding-top: 1px;
+    border-left: 1px solid black;
+  }
+
+  &[data-meta='last']::before {
+    bottom: 50%;
+  }
+}
+
+.#{vars.$lu_css_prefix}-agg-all {
+  cursor: pointer;
+  position: absolute;
+  bottom: 2px;
+  padding-left: 0.4em;
+  left: 0;
+  width: vars.$lu_aggregate_level_width;
+  color: vars.$lu_toolbar_color_base;
+
+  &::before {
+    @include icons.lu_icons();
+
+    content: icons.$lu_icon_expand;
+    transform: rotate(-45deg);
+  }
+
+  &:hover {
+    color: vars.$lu_toolbar_color_hover;
+  }
+
+  &.#{vars.$lu_css_prefix}-agg-compress::before {
+    content: icons.$lu_icon_compress;
+  }
+
+  &[data-level='1'] {
+    left: vars.$lu_aggregate_level_width;
+  }
+
+  &[data-level='2'] {
+    left: vars.$lu_aggregate_level_width * 2;
+  }
+
+  &[data-level='3'] {
+    left: vars.$lu_aggregate_level_width * 3;
+  }
+
+  &[data-level='4'] {
+    left: vars.$lu_aggregate_level_width * 4;
+  }
+}
