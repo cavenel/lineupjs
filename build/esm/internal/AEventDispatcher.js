@@ -1,0 +1,106 @@
+import { dispatch } from 'd3-dispatch';
+/**
+ * helper function to suffix the given event types
+ * @internal
+ */
+export function suffix(suffix, ...prefix) {
+    return prefix.map((p) => `${p}${suffix}`);
+}
+const __DEBUG = false;
+/**
+ * base class for event dispatching using d3 event mechanism, thus .suffix is supported for multiple registrations
+ */
+export default class AEventDispatcher {
+    constructor() {
+        const events = this.createEventList();
+        this.listenerEvents = new Set(events);
+        this.listeners = dispatch(...events);
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const that = this;
+        this.forwarder = function (...args) {
+            that.fireImpl(this.type, this.primaryType, this.origin, ...args);
+        };
+    }
+    on(type, listener) {
+        if (Array.isArray(type)) {
+            type.forEach((d) => {
+                if (this.listenerEvents.has(d.split('.')[0])) {
+                    this.listenersChanged(d, Boolean(listener));
+                    this.listeners.on(d, listener);
+                }
+                else if (__DEBUG && !d.includes('.')) {
+                    console.warn(this, 'invalid event type', d);
+                }
+            });
+        }
+        else if (this.listenerEvents.has(type.split('.')[0])) {
+            this.listenersChanged(type, Boolean(listener));
+            this.listeners.on(type, listener);
+        }
+        else if (__DEBUG && !type.includes('.')) {
+            console.warn(this, 'invalid event type', type);
+        }
+        return this;
+    }
+    /**
+     * helper function that will be called upon a listener has changed
+     * @param _type event type
+     * @param _active registered or de registered
+     */
+    listenersChanged(_type, _active) {
+        // hook
+    }
+    /**
+     * return the list of events to be able to dispatch
+     * @return {Array} by default no events
+     */
+    createEventList() {
+        return [];
+    }
+    fire(type, ...args) {
+        const primaryType = Array.isArray(type) ? type[0] : type;
+        this.fireImpl(type, primaryType, this, ...args);
+    }
+    fireImpl(type, primaryType, origin, ...args) {
+        const fireImpl = (t) => {
+            if (!this.listenerEvents.has(t)) {
+                if (__DEBUG) {
+                    console.warn(this, 'invalid event type', t);
+                }
+                return;
+            }
+            //local context per event, set a this argument
+            const context = {
+                source: this, //who is sending this event,
+                origin,
+                type: t, //the event type
+                primaryType, //in case of multi propagation the 'main' event type
+                args, //the arguments to the listener
+            };
+            this.listeners.apply(t, context, args);
+        };
+        if (Array.isArray(type)) {
+            type.forEach(fireImpl);
+        }
+        else {
+            fireImpl(type);
+        }
+    }
+    /**
+     * forwards one or more events from a given dispatcher to the current one
+     * i.e. when one of the given events is fired in 'from' it will be forwarded to all my listeners
+     * @param {IEventHandler} from the event dispatcher to forward from
+     * @param {string[]} types the event types to forward
+     */
+    forward(from, ...types) {
+        from.on(types, this.forwarder);
+    }
+    /**
+     * removes the forwarding declarations
+     * @param {IEventHandler} from the originated dispatcher
+     * @param {string[]} types event types to forward
+     */
+    unforward(from, ...types) {
+        from.on(types, null);
+    }
+}

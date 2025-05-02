@@ -1,0 +1,177 @@
+import { StringColumn, Column } from '../model';
+import { filterMissingMarkup, findFilterMissing } from '../ui/missing';
+import { renderMissingDOM } from './missing';
+import { setText, exampleText } from './utils';
+import { cssClass } from '../styles';
+import { debounce } from '../internal';
+/**
+ * renders a string with additional alignment behavior
+ * one instance factory shared among strings
+ */
+export default class StringCellRenderer {
+    constructor() {
+        this.title = 'Default';
+    }
+    canRender(col) {
+        return col instanceof StringColumn;
+    }
+    create(col, context) {
+        const align = context.sanitize(col.alignment || 'left');
+        return {
+            template: `<div${align !== 'left' ? ` class="${cssClass(align)}"` : ''}> </div>`,
+            update: (n, d) => {
+                renderMissingDOM(n, col, d);
+                if (col.escape) {
+                    setText(n, col.getLabel(d));
+                }
+                else {
+                    n.innerHTML = col.getLabel(d);
+                }
+                n.title = n.textContent;
+            },
+        };
+    }
+    createGroup(col, context) {
+        return {
+            template: `<div> </div>`,
+            update: (n, group) => {
+                return context.tasks
+                    .groupExampleRows(col, group, 'string', (rows) => exampleText(col, rows))
+                    .then((text) => {
+                    if (typeof text === 'symbol') {
+                        return;
+                    }
+                    n.classList.toggle(cssClass('missing'), !text);
+                    if (col.escape) {
+                        setText(n, text);
+                    }
+                    else {
+                        n.innerHTML = text;
+                        n.title = text;
+                    }
+                });
+            },
+        };
+    }
+    static interactiveSummary(col, node) {
+        const form = node;
+        const filterMissing = findFilterMissing(node);
+        const input = node.querySelector('input[type="text"]');
+        const isRegex = node.querySelector('input[type="checkbox"]');
+        let isInputFocused = false;
+        const update = () => {
+            const valid = input.value.trim();
+            if (valid.length <= 0) {
+                const filter = filterMissing.checked ? { filter: null, filterMissing: filterMissing.checked } : null;
+                col.setFilter(filter);
+                return;
+            }
+            col.setFilter({
+                filter: isRegex.checked ? new RegExp(input.value) : input.value,
+                filterMissing: filterMissing.checked,
+            });
+        };
+        filterMissing.onchange = update;
+        input.onchange = update;
+        input.oninput = debounce(update, 100);
+        input.onfocus = () => {
+            isInputFocused = true;
+        };
+        input.onblur = () => {
+            isInputFocused = false;
+        };
+        isRegex.onchange = update;
+        form.onsubmit = (evt) => {
+            evt.preventDefault();
+            evt.stopPropagation();
+            update();
+            return false;
+        };
+        return (actCol) => {
+            // skip update of form fields if search input is currently in focus
+            // otherwise this function sets an old value while typing
+            if (isInputFocused) {
+                return;
+            }
+            col = actCol;
+            const f = col.getFilter() || { filter: null, filterMissing: false };
+            const bak = f.filter;
+            filterMissing.checked = f.filterMissing;
+            input.value = bak instanceof RegExp ? bak.source : bak || '';
+            isRegex.checked = bak instanceof RegExp;
+        };
+    }
+    createSummary(col, context, interactive) {
+        if (!interactive) {
+            return {
+                template: `<div></div>`,
+                update: (node) => {
+                    const filter = col.getFilter();
+                    node.textContent = filterToString(filter);
+                },
+            };
+        }
+        const f = col.getFilter() || { filter: null, filterMissing: false };
+        const bak = f.filter || '';
+        let update;
+        return {
+            template: `<form><input type="text" placeholder="Filter ${context.sanitize(col.desc.label)}..." autofocus
+      list="${context.idPrefix}${col.id}_dl" value="${context.sanitize(filterToString(f))}">
+          <label class="${cssClass('checkbox')}">
+            <input type="checkbox" ${bak instanceof RegExp ? 'checked="checked"' : ''}>
+            <span>Use regular expressions</span>
+          </label>
+          ${filterMissingMarkup(f.filterMissing)}
+          <datalist id="${context.idPrefix}${col.id}_dl"></datalist></form>`,
+            update: (node) => {
+                if (!update) {
+                    update = StringCellRenderer.interactiveSummary(col, node);
+                }
+                update(col);
+                const dl = node.querySelector('datalist');
+                // no return here = loading indicator since it won't affect the rendering
+                void context.tasks.summaryStringStats(col).then((r) => {
+                    if (typeof r === 'symbol') {
+                        return;
+                    }
+                    const { summary } = r;
+                    matchDataList(dl, summary.topN);
+                });
+            },
+        };
+    }
+}
+/**
+ * @internal
+ */
+export function filterToString(filter) {
+    if (filter == null || !filter.filter) {
+        return '';
+    }
+    if (filter.filter instanceof RegExp) {
+        return filter.filter.source;
+    }
+    return filter.filter;
+}
+/**
+ * matches the given stats to a datalist
+ * @internal
+ */
+export function matchDataList(node, matches) {
+    const children = Array.from(node.options);
+    // update existing
+    for (let i = 0; i < matches.length; i++) {
+        const m = matches[i];
+        let child = children[i];
+        if (!child) {
+            child = node.ownerDocument.createElement('option');
+            node.appendChild(child);
+        }
+        child.value = m.value;
+        setText(child, m.count > 1 ? `${m.value} (${m.count.toLocaleString()})` : m.value);
+    }
+    // remove extra
+    for (let i = children.length - 1; i >= matches.length; i--) {
+        children[i].remove();
+    }
+}

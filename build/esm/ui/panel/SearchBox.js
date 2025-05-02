@@ -1,0 +1,174 @@
+import { clear, AEventDispatcher } from '../../internal';
+import { cssClass } from '../../styles';
+function isItem(v) {
+    return v.id !== undefined;
+}
+class SearchBox extends AEventDispatcher {
+    constructor(options = {}) {
+        super();
+        this.options = {
+            formatItem: (item, node) => {
+                node.textContent = item.text;
+            },
+            doc: document,
+            placeholder: 'Select...',
+        };
+        this.values = [];
+        Object.assign(this.options, options);
+        this.node = this.options.doc.createElement('div');
+        this.node.classList.add(cssClass('search'));
+        this.node.innerHTML = `<input class="${cssClass('search-input')}" type="search">
+    <ul class="${cssClass('search-list')}"></ul>`;
+        this.search = this.node.firstElementChild;
+        this.search.placeholder = this.options.placeholder;
+        this.body = this.node.lastElementChild;
+        this.search.onfocus = () => this.focus();
+        this.search.onblur = () => this.blur();
+        this.search.oninput = () => this.filter();
+        this.search.onkeydown = (evt) => this.handleKey(evt);
+        this.itemTemplate = this.options.doc.createElement('li');
+        this.itemTemplate.classList.add(cssClass('search-item'));
+        this.itemTemplate.innerHTML = `<span></span>`;
+        this.groupTemplate = this.options.doc.createElement('li');
+        this.groupTemplate.classList.add(cssClass('search-group'));
+        this.groupTemplate.innerHTML = `<span></span><ul></ul>`;
+    }
+    get data() {
+        return this.values;
+    }
+    set data(data) {
+        this.values = data;
+        clear(this.body);
+        this.buildDialog(this.body, this.values);
+    }
+    buildDialog(node, values) {
+        for (const v of values) {
+            let li;
+            if (isItem(v)) {
+                li = this.itemTemplate.cloneNode(true);
+                li.onmousedown = (evt) => {
+                    // see https://stackoverflow.com/questions/10652852/jquery-fire-click-before-blur-event#10653160
+                    evt.preventDefault();
+                };
+                li.onclick = () => this.select(v);
+                li.onmouseenter = () => (this.highlighted = li);
+                li.onmouseleave = () => (this.highlighted = null);
+                node.appendChild(li);
+            }
+            else {
+                li = this.groupTemplate.cloneNode(true);
+                this.buildDialog(li.lastElementChild, v.children);
+                node.appendChild(li);
+            }
+            const item = li.firstElementChild;
+            this.options.formatItem(v, item);
+        }
+    }
+    handleKey(evt) {
+        switch (evt.key) {
+            case 'Escape':
+                this.search.blur();
+                break;
+            case 'Enter': {
+                const h = this.highlighted;
+                if (h) {
+                    h.click();
+                }
+                else {
+                    evt.preventDefault();
+                }
+                break;
+            }
+            case 'ArrowUp':
+                this.highlightPrevious();
+                break;
+            case 'ArrowDown':
+                this.highlightNext();
+                break;
+        }
+    }
+    select(item) {
+        this.search.value = ''; // reset
+        this.search.blur();
+        this.fire(SearchBox.EVENT_SELECT, item);
+    }
+    focus() {
+        this.body.style.width = `${this.search.offsetWidth}px`;
+        this.highlighted = this.body.querySelector(SearchBox.SEARCH_ITEM_SELECTOR) || null;
+        this.node.classList.add(cssClass('search-open'));
+    }
+    get highlighted() {
+        var _a;
+        return (_a = this.body.getElementsByClassName(cssClass('search-highlighted'))[0]) !== null && _a !== void 0 ? _a : null;
+    }
+    set highlighted(value) {
+        const old = this.highlighted;
+        if (old === value) {
+            return;
+        }
+        if (old) {
+            old.classList.remove(cssClass('search-highlighted'));
+        }
+        if (value) {
+            value.classList.add(cssClass('search-highlighted'));
+        }
+    }
+    highlightNext() {
+        const h = this.highlighted;
+        if (!h || h.classList.contains(cssClass('hidden'))) {
+            this.highlighted = this.body.querySelector(SearchBox.SEARCH_ITEM_SELECTOR) || null;
+            return;
+        }
+        const items = Array.from(this.body.querySelectorAll(SearchBox.SEARCH_ITEM_SELECTOR));
+        const index = items.indexOf(h);
+        this.highlighted = items[index + 1] || null;
+    }
+    highlightPrevious() {
+        const h = this.highlighted;
+        const items = Array.from(this.body.querySelectorAll(SearchBox.SEARCH_ITEM_SELECTOR));
+        if (!h || h.classList.contains(cssClass('hidden'))) {
+            this.highlighted = items[items.length - 1] || null;
+            return;
+        }
+        const index = items.indexOf(h);
+        this.highlighted = items[index - 1] || null;
+    }
+    blur() {
+        this.search.value = '';
+        // clear filter
+        this.filterResults(this.body, '');
+        this.node.classList.remove(cssClass('search-open'));
+    }
+    filter() {
+        const empty = this.filterResults(this.body, this.search.value.toLowerCase());
+        this.body.classList.toggle(cssClass('search-empty'), empty);
+    }
+    filterResults(node, text) {
+        if (text === '') {
+            // show all
+            Array.from(node.getElementsByClassName(cssClass('hidden'))).forEach((d) => d.classList.remove(cssClass('hidden')));
+            return false;
+        }
+        const children = Array.from(node.children);
+        children.forEach((d) => {
+            const content = d.firstElementChild.innerHTML.toLowerCase();
+            let hidden = !content.includes(text);
+            if (d.classList.contains(cssClass('search-group'))) {
+                const ul = d.lastElementChild;
+                const allChildrenHidden = this.filterResults(ul, text);
+                hidden = hidden && allChildrenHidden;
+            }
+            d.classList.toggle(cssClass('hidden'), hidden);
+        });
+        return children.every((d) => d.classList.contains(cssClass('hidden')));
+    }
+    createEventList() {
+        return super.createEventList().concat([SearchBox.EVENT_SELECT]);
+    }
+    on(type, listener) {
+        return super.on(type, listener);
+    }
+}
+SearchBox.EVENT_SELECT = 'select';
+SearchBox.SEARCH_ITEM_SELECTOR = `.${cssClass('search-item')}:not(.${cssClass('hidden')})`;
+export default SearchBox;
