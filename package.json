@@ -39,8 +39,8 @@
   "types": "build/src/index.d.ts",
   "exports": {
     ".": {
-      "import": "./build/src/index.js",
-      "require": "./build/LineUpJS.js",
+      "import": "./build/esm/index.js",
+      "require": "./build/index.js",
       "style": "./build/LineUpJS.css",
       "sass": "./src/style.scss",
       "types": "./build/src/index.d.ts"
