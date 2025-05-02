@@ -1,0 +1,3 @@
+/*! For license information please see LineUpJS_fontawesome.js.LICENSE.txt */
+!function(e,o){"object"==typeof exports&&"object"==typeof module?module.exports=o():"function"==typeof define&&define.amd?define([],o):"object"==typeof exports?exports.LineUpJS=o():e.LineUpJS=o()}(globalThis,(()=>(()=>{"use strict";var e={};return(e=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})})(e),e})()));
+//# sourceMappingURL=LineUpJS_fontawesome.js.map
