@@ -1,0 +1,1 @@
+{"version":3,"file":"APopup.d.ts","sourceRoot":"","sources":["../../../../src/ui/dialogs/APopup.ts"],"names":[],"mappings":"AAAA,OAAO,OAAO,EAAE,EAAE,KAAK,cAAc,EAAE,KAAK,cAAc,EAAE,MAAM,WAAW,CAAC;AAE9E,uBAAe,MAAO,SAAQ,OAAO;gBACvB,MAAM,EAAE,QAAQ,CAAC,cAAc,CAAC,EAAE,OAAO,GAAE,OAAO,CAAC,cAAc,CAAM;IAYnF,SAAS,CAAC,MAAM;IAIhB,SAAS,CAAC,KAAK;IAIf,SAAS,CAAC,MAAM;CAGjB;AAED,eAAe,MAAM,CAAC"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"impose.d.ts","sourceRoot":"","sources":["../../../src/renderer/impose.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAmB,KAAK,QAAQ,EAAiB,MAAM,UAAU,CAAC;AACjF,OAAO,KAAK,EAAE,QAAQ,EAAE,MAAM,cAAc,CAAC;AAE7C,wBAAgB,OAAO,CAAC,GAAG,EAAE,MAAM,EAAE,GAAG,EAAE,QAAQ,GAAG,IAAI,EAAE,OAAO,CAAC,EAAE,QAAQ,EAAE,SAAS,CAAC,EAAE,MAAM,UAWhG"}
